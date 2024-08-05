@@ -1,0 +1,8 @@
+:root {
+	--marquee-height: 2rem;
+}
+
+.main {
+	height: calc(100dvh - var(--marquee-height));
+	width: 100dvw;
+}
