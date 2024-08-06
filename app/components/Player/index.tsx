@@ -16,12 +16,12 @@ const Player:React.FC<PlayerProps> = ({title}) => {
         startY: number,
         lastX: number,
         lastY: number
-      }>({
+        }>({
         startX: 0,
         startY: 0,
         lastX: 0,
         lastY: 0
-      })
+        })
     const ref = useRef<HTMLDivElement | null>(null)
     const handleMouseDown = (e:MouseEvent) =>{ 
         setIsDragging (true)  
