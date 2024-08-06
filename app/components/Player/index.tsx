@@ -11,19 +11,40 @@ interface PlayerProps {
 
 const Player:React.FC<PlayerProps> = ({title}) => {
     const [isDragging, setIsDragging] = useState<boolean>(false)
-    const [position, setPosition] = useState<{x:number; y:number}>({x:0,y:0})
+    const coords = useRef<{
+        startX: number,
+        startY: number,
+        lastX: number,
+        lastY: number
+      }>({
+        startX: 0,
+        startY: 0,
+        lastX: 0,
+        lastY: 0
+      })
     const ref = useRef<HTMLDivElement | null>(null)
-    const handleMouseDown = () =>{ setIsDragging (true)}
-    const handleMouseUp = () => {setIsDragging(false)}
-    const handleMouseMove = (event:MouseEvent) => {
-        if(isDragging && ref.current){
-            const x = event.clientX - ref.current.getBoundingClientRect().left
-            const y = event.clientY - ref.current.getBoundingClientRect().top
-            setPosition({
-                x: event.clientX - x,
-                y: event.clientY - y
-            })
+    const handleMouseDown = (e:MouseEvent) =>{ 
+        setIsDragging (true)  
+        coords.current.startX = e.clientX
+        coords.current.startY = e.clientY             
+    }
+    const handleMouseUp = () => {
+        setIsDragging(false)
+        if(ref.current){
+            coords.current.lastX = ref.current.offsetLeft
+            coords.current.lastY = ref.current.offsetTop
         }
+        
+
+    }
+    const handleMouseMove = (event:MouseEvent) => {
+        if(isDragging && ref.current){        
+            const nextX = event.clientX - coords.current.startX + coords.current.lastX;
+            const nextY = event.clientY - coords.current.startY + coords.current.lastY;
+            ref.current.style.top = `${nextY}px`
+            ref.current.style.left = `${nextX}px`
+        }
+        
     }
 
     const progress ='45%'
@@ -48,10 +69,8 @@ const Player:React.FC<PlayerProps> = ({title}) => {
         className={style.playerContainer} 
         ref={ref} 
         onMouseDown={handleMouseDown}
-        style={{
-            top: position.x,
-            left: position.y
-        }}>
+        onMouseUp={handleMouseUp}
+        >
             <div className={style.outerDisk}></div>
             <div className={style.progressCircle} style={{ '--progress': progress }}></div>
             <div className={style.innerDisk}></div>
